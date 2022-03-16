@@ -1,5 +1,6 @@
 module List.Nonempty.Ancillary exposing
     ( setAt, updateAt
+    , foldr, foldr1
     , maximum, maximumBy, maximumWith, minimum, minimumBy, minimumWith
     , indexedMaximum, indexedMaximumBy, indexedMaximumWith, indexedMinimum, indexedMinimumBy, indexedMinimumWith
     , find, count
@@ -16,6 +17,11 @@ lists.
 # Getting, Setting, and Updating
 
 @docs setAt, updateAt
+
+
+# Folds
+
+@docs foldr, foldr1
 
 
 # Finding Extrema
@@ -134,6 +140,38 @@ updateAt i f (Nonempty x xs) =
 
         Nothing ->
             Nonempty x xs
+
+
+{-| Reduce a non-empty list from the right.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    foldr (+) 0 <| Nonempty 1 [ 2, 3 ]
+    --> 6
+
+    foldr (::) [] <| Nonempty 1 [ 2, 3 ]
+    --> [ 1, 2, 3 ]
+
+-}
+foldr : (a -> b -> b) -> b -> Nonempty a -> b
+foldr step init (Nonempty x xs) =
+    List.foldr step init <| x :: xs
+
+
+{-| Reduce a non-empty list from the right, treating the last element of the list as the starting value.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    foldr1 (-) <| Nonempty 1 [ 2, 3, 4 ]
+    --> -2
+
+    foldr1 (++) <| Nonempty "a" [ "b", "c" ]
+    --> "abc"
+
+-}
+foldr1 : (a -> a -> a) -> Nonempty a -> a
+foldr1 step =
+    NE.foldl1 step << NE.reverse
 
 
 {-| Find the maximum element in a non-empty list.
