@@ -143,13 +143,19 @@ extremaSuite =
         , describe "maximumBy"
             [ fuzz (fuzzNonempty fuzzRecord) "should be equal to maximum of list by a" <|
                 \l ->
-                    Expect.equal (Just <| maximumBy .a l) (ListX.maximumBy .a <| NE.toList l)
+                    NE.toList l
+                        |> ListX.maximumBy .a
+                        |> Expect.equal (Just <| maximumBy .a l)
             , fuzz (fuzzNonempty fuzzRecord) "should be equal to maximum of list by b" <|
                 \l ->
-                    Expect.equal (Just <| maximumBy .b l) (ListX.maximumBy .b <| NE.toList l)
+                    NE.toList l
+                        |> ListX.maximumBy .b
+                        |> Expect.equal (Just <| maximumBy .b l)
             , test "returns first result" <|
                 \() ->
-                    Expect.equal { a = 4, b = 1 } <| maximumBy .a (Nonempty { a = 2, b = 5 } [ { a = 4, b = 1 }, { a = 4, b = 2 } ])
+                    Nonempty { a = 2, b = 5 } [ { a = 4, b = 1 }, { a = 4, b = 2 } ]
+                        |> maximumBy .a
+                        |> Expect.equal { a = 4, b = 1 }
             ]
         , describe "maximumWith"
             [ fuzz (fuzzNonempty fuzzRecord) "should be equal to maximum of list" <|
@@ -177,13 +183,19 @@ extremaSuite =
         , describe "minimumBy"
             [ fuzz (fuzzNonempty fuzzRecord) "should be equal to minimum of list by a" <|
                 \l ->
-                    Expect.equal (Just <| minimumBy .a l) (ListX.minimumBy .a <| NE.toList l)
+                    NE.toList l
+                        |> ListX.minimumBy .a
+                        |> Expect.equal (Just <| minimumBy .a l)
             , fuzz (fuzzNonempty fuzzRecord) "should be equal to minimum of list by b" <|
                 \l ->
-                    Expect.equal (Just <| minimumBy .b l) (ListX.minimumBy .b <| NE.toList l)
+                    NE.toList l
+                        |> ListX.minimumBy .b
+                        |> Expect.equal (Just <| minimumBy .b l)
             , test "returns first result" <|
                 \() ->
-                    Expect.equal { a = 2, b = 5 } <| minimumBy .a (Nonempty { a = 2, b = 5 } [ { a = 4, b = 1 }, { a = 2, b = 2 } ])
+                    Nonempty { a = 2, b = 5 } [ { a = 4, b = 1 }, { a = 2, b = 2 } ]
+                        |> minimumBy .a
+                        |> Expect.equal { a = 2, b = 5 }
             ]
         , describe "minimumWith"
             [ fuzz (fuzzNonempty fuzzRecord) "should be equal to minimum of list" <|
@@ -214,7 +226,10 @@ extremaWithIndicesSuite =
         [ describe "indexedMaximum"
             [ fuzz (fuzzNonempty Fuzz.string) "should return correct index" <|
                 \l ->
-                    Expect.equal (Just <| indexedMaximum l) (ListX.maximumBy Tuple.second <| NE.toList <| NE.indexedMap Tuple.pair l)
+                    NE.indexedMap Tuple.pair l
+                        |> NE.toList
+                        |> ListX.maximumBy Tuple.second
+                        |> Expect.equal (Just <| indexedMaximum l)
             , test "returns first result" <|
                 \() ->
                     Expect.equal ( 1, 5 ) <| indexedMaximum (Nonempty 2 [ 5, 5 ])
@@ -222,13 +237,21 @@ extremaWithIndicesSuite =
         , describe "indexedMaximumBy"
             [ fuzz (fuzzNonempty fuzzRecord) "should return correct index by a" <|
                 \l ->
-                    Expect.equal (Just <| indexedMaximumBy .a l) (ListX.maximumBy (.a << Tuple.second) <| NE.toList <| NE.indexedMap Tuple.pair l)
+                    NE.indexedMap Tuple.pair l
+                        |> NE.toList
+                        |> ListX.maximumBy (.a << Tuple.second)
+                        |> Expect.equal (Just <| indexedMaximumBy .a l)
             , fuzz (fuzzNonempty fuzzRecord) "should return correct index by b" <|
                 \l ->
-                    Expect.equal (Just <| indexedMaximumBy .b l) (ListX.maximumBy (.b << Tuple.second) <| NE.toList <| NE.indexedMap Tuple.pair l)
+                    NE.indexedMap Tuple.pair l
+                        |> NE.toList
+                        |> ListX.maximumBy (.b << Tuple.second)
+                        |> Expect.equal (Just <| indexedMaximumBy .b l)
             , test "returns first result" <|
                 \() ->
-                    Expect.equal ( 1, { a = 4, b = 1 } ) <| indexedMaximumBy .a (Nonempty { a = 2, b = 5 } [ { a = 4, b = 1 }, { a = 4, b = 2 } ])
+                    Nonempty { a = 2, b = 5 } [ { a = 4, b = 1 }, { a = 4, b = 2 } ]
+                        |> indexedMaximumBy .a
+                        |> Expect.equal ( 1, { a = 4, b = 1 } )
             ]
         , describe "indexedMaximumWith"
             [ fuzz (fuzzNonempty fuzzRecord) "should return correct index" <|
@@ -251,7 +274,10 @@ extremaWithIndicesSuite =
         , describe "indexedMinimum"
             [ fuzz (fuzzNonempty Fuzz.string) "should return correct index" <|
                 \l ->
-                    Expect.equal (Just <| indexedMinimum l) (ListX.minimumBy Tuple.second <| NE.toList <| NE.indexedMap Tuple.pair l)
+                    NE.indexedMap Tuple.pair l
+                        |> NE.toList
+                        |> ListX.minimumBy Tuple.second
+                        |> Expect.equal (Just <| indexedMinimum l)
             , test "returns first result" <|
                 \() ->
                     Expect.equal ( 0, 2 ) <| indexedMinimum (Nonempty 2 [ 5, 2 ])
@@ -259,13 +285,21 @@ extremaWithIndicesSuite =
         , describe "indexedMinimumBy"
             [ fuzz (fuzzNonempty fuzzRecord) "should return correct index by a" <|
                 \l ->
-                    Expect.equal (Just <| indexedMinimumBy .a l) (ListX.minimumBy (.a << Tuple.second) <| NE.toList <| NE.indexedMap Tuple.pair l)
+                    NE.indexedMap Tuple.pair l
+                        |> NE.toList
+                        |> ListX.minimumBy (.a << Tuple.second)
+                        |> Expect.equal (Just <| indexedMinimumBy .a l)
             , fuzz (fuzzNonempty fuzzRecord) "should return correct index by b" <|
                 \l ->
-                    Expect.equal (Just <| indexedMinimumBy .b l) (ListX.minimumBy (.b << Tuple.second) <| NE.toList <| NE.indexedMap Tuple.pair l)
+                    NE.indexedMap Tuple.pair l
+                        |> NE.toList
+                        |> ListX.minimumBy (.b << Tuple.second)
+                        |> Expect.equal (Just <| indexedMinimumBy .b l)
             , test "returns first result" <|
                 \() ->
-                    Expect.equal ( 0, { a = 2, b = 5 } ) <| indexedMinimumBy .a (Nonempty { a = 2, b = 5 } [ { a = 4, b = 1 }, { a = 2, b = 2 } ])
+                    Nonempty { a = 2, b = 5 } [ { a = 4, b = 1 }, { a = 2, b = 2 } ]
+                        |> indexedMinimumBy .a
+                        |> Expect.equal ( 0, { a = 2, b = 5 } )
             ]
         , describe "indexedMinimumWith"
             [ fuzz (fuzzNonempty fuzzRecord) "should return correct index" <|
@@ -275,7 +309,10 @@ extremaWithIndicesSuite =
                         f x y =
                             compare x.a y.a
                     in
-                    Expect.equal (Just <| indexedMinimumWith f l) (ListX.minimumWith (\( _, x ) ( _, y ) -> f x y) <| NE.toList <| NE.indexedMap Tuple.pair l)
+                    NE.indexedMap Tuple.pair l
+                        |> NE.toList
+                        |> ListX.minimumWith (\( _, x ) ( _, y ) -> f x y)
+                        |> Expect.equal (Just <| indexedMinimumWith f l)
             , test "returns first result" <|
                 \() ->
                     let
@@ -295,11 +332,11 @@ maybeSuite =
     describe "`Maybe`s"
         [ describe "combine"
             [ fuzz
-                (fuzzNonempty <|
-                    Fuzz.frequency
-                        [ ( 1, Fuzz.constant Nothing )
-                        , ( 9, Fuzz.map Just Fuzz.int )
-                        ]
+                (Fuzz.frequency
+                    [ ( 1, Fuzz.constant Nothing )
+                    , ( 9, Fuzz.map Just Fuzz.int )
+                    ]
+                    |> fuzzNonempty
                 )
                 "If any is `Nothing`, combine outputs `Nothing`"
               <|
@@ -314,11 +351,11 @@ maybeSuite =
             ]
         , describe "traverse"
             [ fuzz
-                (fuzzNonempty <|
-                    Fuzz.frequency
-                        [ ( 1, Fuzz.constant [] )
-                        , ( 9, Fuzz.map2 (::) Fuzz.int (Fuzz.list Fuzz.int) )
-                        ]
+                (Fuzz.frequency
+                    [ ( 1, Fuzz.constant [] )
+                    , ( 9, Fuzz.map2 (::) Fuzz.int (Fuzz.list Fuzz.int) )
+                    ]
+                    |> fuzzNonempty
                 )
                 "If any function output is `Nothing`, combine outputs `Nothing`"
               <|
