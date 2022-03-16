@@ -322,8 +322,11 @@ indexedMinimumWith f (Nonempty l ls) =
 all the unwrapped values. If one or more elements are `Nothing`, then the
 entire output will be `Nothing`.
 
+    import List.Nonempty exposing (Nonempty(..))
+
     combine (Nonempty (Just 1) [ Just 2, Just 3 ])
     --> Just (Nonempty 1 [ 2, 3 ])
+
     combine (Nonempty (Just 1) [ Nothing, Just 3 ])
     --> Nothing
 
@@ -340,8 +343,11 @@ combine l =
 call returns `Just a`, then return a list of all the values. If one or more
 function call returns `Nothing`, then the entire output will be `Nothing`.
 
+    import List.Nonempty exposing (Nonempty(..))
+
     traverse List.head (Nonempty [ 1 ] [ [2], [ 3, 4 ] ])
     --> Just (Nonempty 1 [ 2, 3 ])
+
     traverse List.head (Nonempty [ 1 ] [ [], [ 3, 4 ] ])
     --> Nothing
 
