@@ -507,7 +507,7 @@ decodeObject : Decoder a -> Decoder (Nonempty a)
 decodeObject d =
     Decode.map2 Nonempty
         (Decode.field "head" d)
-        (Decode.field "tail" (Decode.list d))
+        (Decode.field "tail" <| Decode.list d)
 
 
 {-| Encode a non-empty list into a JSON object of the form:
