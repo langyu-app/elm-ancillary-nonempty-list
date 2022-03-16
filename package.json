@@ -1,12 +1,14 @@
 {
   "name": "elm-ancillary-nonempty-list",
   "scripts": {
+    "elm-bump": "npm-run-all --print-name --silent --sequential test bump-version",
+    "bump-version": "(yes | elm bump)",
     "postinstall": "elm-tooling install",
     "preview-docs": "elm-doc-preview",
     "review": "npx elm-review --fix",
     "test": "npm-run-all --print-name --silent --sequential test:make test:format test:run test:verify-examples test:review",
     "test:format": "elm-format src/ tests/ --validate",
-    "test:make": "elm make --docs=docs.json --output=/dev/null",
+    "test:make": "elm make --docs=docs.json",
     "test:review": "elm-review",
     "test:run": "elm-test-rs",
     "test:verify-examples": "elm-verify-examples --run-tests"
