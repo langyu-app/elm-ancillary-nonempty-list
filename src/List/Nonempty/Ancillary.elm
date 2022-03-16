@@ -2,6 +2,7 @@ module List.Nonempty.Ancillary exposing
     ( setAt, updateAt
     , maximum, maximumBy, maximumWith, minimum, minimumBy, minimumWith
     , indexedMaximum, indexedMaximumBy, indexedMaximumWith, indexedMinimum, indexedMinimumBy, indexedMinimumWith
+    , count
     , combine, traverse
     , decodeArray, encodeArray, decodeObject, encodeObject
     , shuffle
@@ -29,6 +30,11 @@ Find minimum/maximum elements without `Maybe`s.
 Find minimum/maximum elements and their indices without `Maybe`s.
 
 @docs indexedMaximum, indexedMaximumBy, indexedMaximumWith, indexedMinimum, indexedMinimumBy, indexedMinimumWith
+
+
+# Searching
+
+@docs count
 
 
 # `Maybe`s
@@ -414,6 +420,27 @@ indexedMinimumWith f (Nonempty l ls) =
                     acc
     in
     ListX.indexedFoldl step ( 0, l ) ls
+
+
+{-| Return the number of elements in the list that satisfy a given predicate.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    count ((==) Nothing << String.toInt) <| Nonempty "1" [ "yi", "2", "er", "3", "san" ]
+    --> 3
+
+-}
+count : (a -> Bool) -> Nonempty a -> Int
+count pred =
+    NE.foldl
+        (\x acc ->
+            if pred x then
+                acc + 1
+
+            else
+                acc
+        )
+        0
 
 
 {-| If every `Maybe` in the non-empty list is `Just a`, then return a list of

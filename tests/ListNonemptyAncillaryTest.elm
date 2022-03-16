@@ -9,6 +9,7 @@ import List.Nonempty as NE exposing (Nonempty(..))
 import List.Nonempty.Ancillary
     exposing
         ( combine
+        , count
         , decodeArray
         , decodeObject
         , encodeArray
@@ -43,6 +44,7 @@ all =
         [ extremaSuite
         , extremaWithIndicesSuite
         , getSetUpdateSuite
+        , searchSuite
         , jsonSuite
         , maybeSuite
         , randomSuite
@@ -429,6 +431,21 @@ randomSuite =
                         |> NE.sort
                         |> NE.toList
                         |> Expect.equalLists (NE.toList sorted)
+            ]
+        ]
+
+
+{-| Test suite for `List.Nonempty.Ancillary` for searching lists.
+-}
+searchSuite : Test
+searchSuite =
+    describe "Searching"
+        [ describe "count"
+            [ fuzz (fuzzNonempty Fuzz.int) "should return the correct count" <|
+                \l ->
+                    NE.toList l
+                        |> ListX.count ((==) 0 << modBy 2)
+                        |> Expect.equal (count ((==) 0 << modBy 2) l)
             ]
         ]
 
