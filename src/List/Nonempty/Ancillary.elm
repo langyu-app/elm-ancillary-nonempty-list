@@ -68,10 +68,6 @@ import Random exposing (Generator)
 import Random.List
 
 
-
--- * Getting, Setting, and Updating
-
-
 {-| Given an index and a value, replace the element at that index with the given
 value. Indices are modulus the length of the list, so out-of-range errors
 cannot occur; this means that negative indices are supported, e.g. -1 to set the
@@ -110,10 +106,6 @@ updateAt i f (Nonempty x xs) =
 
     else
         Nonempty x <| ListX.updateAt (j - 1) f xs
-
-
-
--- * Finding Extrema
 
 
 {-| Find the maximum element in a non-empty list.
@@ -208,10 +200,6 @@ minimumWith f (Nonempty l ls) =
                     acc
     in
     List.foldl step l ls
-
-
-
--- * Finding Extrema With Indices
 
 
 {-| Find the **first** maximum element in a non-empty list and its index.
@@ -330,10 +318,6 @@ indexedMinimumWith f (Nonempty l ls) =
     ListX.indexedFoldl step ( 0, l ) ls
 
 
-
--- * `Maybe`s
-
-
 {-| If every `Maybe` in the non-empty list is `Just a`, then return a list of
 all the unwrapped values. If one or more elements are `Nothing`, then the
 entire output will be `Nothing`.
@@ -368,10 +352,6 @@ traverse f xs =
         (Just [])
         (NE.tail xs)
         |> Maybe.map2 Nonempty (f <| NE.head xs)
-
-
-
--- * JSON Decoder/Encoder
 
 
 {-| Decode a non-empty list from a JSON array, failing if it is empty.
@@ -412,10 +392,6 @@ decodeObject d =
 encodeObject : (a -> Encode.Value) -> Nonempty a -> Encode.Value
 encodeObject e (Nonempty x xs) =
     Encode.object [ ( "head", e x ), ( "tail", Encode.list e xs ) ]
-
-
-
--- * Random
 
 
 {-| Shuffle the non-empty list. This of course has no effect on a list of one
