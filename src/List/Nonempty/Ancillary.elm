@@ -77,6 +77,17 @@ Note that this is _not_ particularly efficient (iterating over the entire list
 multiple times) and should probably not be used for very large lists. `Array`s
 are of course preferable in such cases.
 
+    import List.Nonempty exposing (Nonempty(..))
+
+    setAt 1 "er" <| Nonempty "foo" [ "bar", "baz" ]
+    --> Nonempty "foo" [ "er", "baz" ]
+
+    setAt 6 "yi" <| Nonempty "foo" [ "bar", "baz" ]
+    --> Nonempty "yi" [ "bar", "baz" ]
+
+    setAt -1 "san" <| Nonempty "foo" [ "bar", "baz" ]
+    --> Nonempty "foo" [ "bar", "san" ]
+
 -}
 setAt : Int -> a -> Nonempty a -> Nonempty a
 setAt i x =
@@ -92,6 +103,17 @@ behavior of `List.Nonempty.get`
 Note that this is _not_ particularly efficient (iterating over the entire list
 multiple times) and should probably not be used for very large lists. `Array`s
 are of course preferable in such cases.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    updateAt 1 ((+) 1) <| Nonempty 1 [ 1, 1 ]
+    --> Nonempty 1 [ 2, 1 ]
+
+    updateAt 6 ((+) 1) <| Nonempty 1 [ 1, 1 ]
+    --> Nonempty 2 [ 1, 1 ]
+
+    updateAt -1 ((+) 1) <| Nonempty 1 [ 1, 1 ]
+    --> Nonempty 1 [ 1, 2 ]
 
 -}
 updateAt : Int -> (a -> a) -> Nonempty a -> Nonempty a
@@ -109,6 +131,12 @@ updateAt i f (Nonempty x xs) =
 
 
 {-| Find the maximum element in a non-empty list.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    maximum <| Nonempty 1 [ 3, 2 ]
+    --> 3
+
 -}
 maximum : Nonempty comparable -> comparable
 maximum (Nonempty x xs) =
@@ -117,6 +145,12 @@ maximum (Nonempty x xs) =
 
 {-| Given a function to map a type to a comparable type, find the **first**
 maximum element in a non-empty list.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    maximumBy (\i -> i * i) <| Nonempty 1 [ -3, 3 ]
+    --> -3
+
 -}
 maximumBy : (a -> comparable) -> Nonempty a -> a
 maximumBy f (Nonempty l ls) =
@@ -139,6 +173,13 @@ maximumBy f (Nonempty l ls) =
 
 {-| Given a comparison function, find the **first** maximum element in a
 non-empty list.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    Nonempty { id = 0, val = 1 } [ { id = 1, val = 3 }, { id = 2, val = 0 } ]
+        |> maximumWith (\a b -> compare a.val b.val)
+    --> { id = 1, val = 3 }
+
 -}
 maximumWith : (a -> a -> Order) -> Nonempty a -> a
 maximumWith f (Nonempty l ls) =
@@ -156,6 +197,12 @@ maximumWith f (Nonempty l ls) =
 
 
 {-| Find the minimum element in a non-empty list.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    minimum <| Nonempty 1 [ 3, 2 ]
+    --> 1
+
 -}
 minimum : Nonempty comparable -> comparable
 minimum (Nonempty x xs) =
@@ -164,6 +211,12 @@ minimum (Nonempty x xs) =
 
 {-| Given a function to map a type to a comparable type, find the **first**
 minimum element in a non-empty list.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    minimumBy (\i -> i * i) <| Nonempty 1 [ -1, 2 ]
+    --> 1
+
 -}
 minimumBy : (a -> comparable) -> Nonempty a -> a
 minimumBy f (Nonempty l ls) =
@@ -186,6 +239,13 @@ minimumBy f (Nonempty l ls) =
 
 {-| Given a comparison function, find the **first** minimum element in a
 non-empty list.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    Nonempty { id = 0, val = 1 } [ { id = 1, val = 3 }, { id = 2, val = 0 } ]
+        |> minimumWith (\a b -> compare a.val b.val)
+    --> { id = 2, val = 0 }
+
 -}
 minimumWith : (a -> a -> Order) -> Nonempty a -> a
 minimumWith f (Nonempty l ls) =
@@ -203,6 +263,12 @@ minimumWith f (Nonempty l ls) =
 
 
 {-| Find the **first** maximum element in a non-empty list and its index.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    indexedMaximum <| Nonempty 1 [ 3, 2, 3 ]
+    --> ( 1, 3 )
+
 -}
 indexedMaximum : Nonempty comparable -> ( Int, comparable )
 indexedMaximum (Nonempty l ls) =
@@ -221,6 +287,12 @@ indexedMaximum (Nonempty l ls) =
 
 {-| Given a function to map a type to a comparable type, find the **first**
 maximum element in a non-empty list and its index.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    indexedMaximumBy (\i -> i * i) <| Nonempty 1 [ -3, 3 ]
+    --> ( 1, -3 )
+
 -}
 indexedMaximumBy : (a -> comparable) -> Nonempty a -> ( Int, a )
 indexedMaximumBy f (Nonempty l ls) =
@@ -244,6 +316,13 @@ indexedMaximumBy f (Nonempty l ls) =
 
 {-| Given a comparison function, find the **first** maximum element in a
 non-empty list and its index.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    Nonempty { id = 0, val = 1 } [ { id = 1, val = 3 }, { id = 2, val = 3 } ]
+        |> indexedMaximumWith (\a b -> compare a.val b.val)
+    --> ( 1, { id = 1, val = 3 } )
+
 -}
 indexedMaximumWith : (a -> a -> Order) -> Nonempty a -> ( Int, a )
 indexedMaximumWith f (Nonempty l ls) =
@@ -261,6 +340,12 @@ indexedMaximumWith f (Nonempty l ls) =
 
 
 {-| Find the **first** minimum element in a non-empty list and its index.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    indexedMinimum <| Nonempty 2 [ 2, 1, 1 ]
+    --> ( 2, 1 )
+
 -}
 indexedMinimum : Nonempty comparable -> ( Int, comparable )
 indexedMinimum (Nonempty l ls) =
@@ -279,6 +364,12 @@ indexedMinimum (Nonempty l ls) =
 
 {-| Given a function to map a type to a comparable type, find the **first**
 minimum element in a non-empty list and its index.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    indexedMinimumBy (\i -> i * i) <| Nonempty 2 [ -1, 1 ]
+    --> ( 1, -1 )
+
 -}
 indexedMinimumBy : (a -> comparable) -> Nonempty a -> ( Int, a )
 indexedMinimumBy f (Nonempty l ls) =
@@ -302,6 +393,13 @@ indexedMinimumBy f (Nonempty l ls) =
 
 {-| Given a comparison function, find the **first** minimum element in a
 non-empty list and its index.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    Nonempty { id = 0, val = 1 } [ { id = 1, val = 3 }, { id = 2, val = 1 } ]
+        |> indexedMinimumWith (\a b -> compare a.val b.val)
+    --> ( 0, { id = 0, val = 1 } )
+
 -}
 indexedMinimumWith : (a -> a -> Order) -> Nonempty a -> ( Int, a )
 indexedMinimumWith f (Nonempty l ls) =
@@ -361,6 +459,16 @@ traverse f xs =
 
 
 {-| Decode a non-empty list from a JSON array, failing if it is empty.
+
+    import List.Nonempty exposing (Nonempty(..))
+    import Json.Decode as Decode
+
+    Decode.decodeString (decodeArray Decode.int) "[1,2,3]"
+    --> Ok (Nonempty 1 [ 2, 3 ])
+    Decode.decodeString (decodeArray Decode.int) "[]"
+        |> Result.toMaybe
+    --> Nothing
+
 -}
 decodeArray : Decoder a -> Decoder (Nonempty a)
 decodeArray d =
@@ -368,6 +476,13 @@ decodeArray d =
 
 
 {-| Turn a non-empty list into a JSON array.
+
+    import List.Nonempty exposing (Nonempty(..))
+    import Json.Encode as Encode
+
+    Encode.encode 0 (encodeArray Encode.int <| Nonempty 1 [ 2, 3 ])
+    --> "[1,2,3]"
+
 -}
 encodeArray : (a -> Encode.Value) -> Nonempty a -> Encode.Value
 encodeArray e =
@@ -379,6 +494,13 @@ encodeArray e =
     { "head": x1
     , "tail": [x2, x3]
     }
+
+
+    import List.Nonempty exposing (Nonempty(..))
+    import Json.Decode as Decode
+
+    Decode.decodeString (decodeObject Decode.int) "{ \"head\": 1, \"tail\": [2,3] }"
+    --> Ok (Nonempty 1 [ 2, 3 ])
 
 -}
 decodeObject : Decoder a -> Decoder (Nonempty a)
@@ -393,6 +515,12 @@ decodeObject d =
     { "head": x1
     , "tail": [x2, x3]
     }
+
+    import List.Nonempty exposing (Nonempty(..))
+    import Json.Encode as Encode
+
+    Encode.encode 0 (encodeObject Encode.int <| Nonempty 1 [ 2, 3 ])
+    --> "{\"head\":1,\"tail\":[2,3]}"
 
 -}
 encodeObject : (a -> Encode.Value) -> Nonempty a -> Encode.Value
