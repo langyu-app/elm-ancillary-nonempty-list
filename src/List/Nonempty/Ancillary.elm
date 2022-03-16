@@ -66,6 +66,7 @@ and `"tail"`, containing a (possibly empty) array of the rest of the elements:
 
 -}
 
+import Basics.Extra exposing (safeModBy)
 import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode
 import List.Extra as ListX
@@ -124,16 +125,15 @@ are of course preferable in such cases.
 -}
 updateAt : Int -> (a -> a) -> Nonempty a -> Nonempty a
 updateAt i f (Nonempty x xs) =
-    let
-        j : Int
-        j =
-            modBy (1 + List.length xs) i
-    in
-    if j == 0 then
-        Nonempty (f x) xs
+    case safeModBy (1 + List.length xs) i of
+        Just 0 ->
+            Nonempty (f x) xs
 
-    else
-        Nonempty x <| ListX.updateAt (j - 1) f xs
+        Just j ->
+            Nonempty x <| ListX.updateAt (j - 1) f xs
+
+        Nothing ->
+            Nonempty x xs
 
 
 {-| Find the maximum element in a non-empty list.

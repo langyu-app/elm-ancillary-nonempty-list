@@ -1,5 +1,6 @@
 module ListNonemptyAncillaryTest exposing (all)
 
+import Basics.Extra exposing (safeModBy)
 import Expect
 import Fuzz exposing (Fuzzer)
 import Json.Decode as Decode
@@ -262,7 +263,7 @@ getSetUpdateSuite =
                     let
                         j : Int
                         j =
-                            modBy (NE.length xs) i
+                            Maybe.withDefault 0 <| safeModBy (NE.length xs) i
                     in
                     setAt i x xs
                         |> NE.indexedMap Tuple.pair
@@ -295,7 +296,7 @@ getSetUpdateSuite =
                     let
                         j : Int
                         j =
-                            modBy (NE.length xs) i
+                            Maybe.withDefault 0 <| safeModBy (NE.length xs) i
                     in
                     updateAt i ((+) add) xs
                         |> NE.indexedMap Tuple.pair
