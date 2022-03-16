@@ -1,4 +1,4 @@
-module TestListNonempty exposing
+module ListNonemptyAncillaryTest exposing
     ( extremaSuite
     , extremaWithIndicesSuite
     , getSetUpdateSuite
