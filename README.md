@@ -1,6 +1,6 @@
 # elm-ancillary-nonempty-list
 
-![Build Status](https://github.com/langyu-app/elm-ancillary-nonempty-list/actions/workflows/ci.yml/badge.svg)
+![Build Status](https://github.com/langyu-app/elm-ancillary-nonempty-list/actions/workflows/test.yml/badge.svg)
 
 * [elm-ancillary-nonempty-list](#elm-ancillary-nonempty-list)
   * [Introduction](#introduction)
