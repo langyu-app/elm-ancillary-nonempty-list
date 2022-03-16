@@ -5,5 +5,4 @@ elm-stuff
 .vscode
 
 # CI Packages
-package-lock.json
 node_modules
