@@ -28,4 +28,4 @@ useful and isn't found already in `mgold/elm-nonempty-list`.
 
 ---
 
-[![the langyu logo, a multi-colored tangram depicting a wolf](https://raw.githubusercontent.com/langyu-app/organization/master/logos/main.svg)](https://www.github.com/langyu-app)
+[![the langyu logo, a multi-colored tangram depicting a wolf](https://raw.githubusercontent.com/langyu-app/organization/master/Logos/main.svg)](https://www.github.com/langyu-app)
