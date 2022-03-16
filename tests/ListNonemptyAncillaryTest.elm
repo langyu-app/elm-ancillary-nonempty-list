@@ -49,94 +49,6 @@ all =
         ]
 
 
-{-| Fuzz a non-empty list full of a given type.
--}
-fuzzNonempty : Fuzzer a -> Fuzzer (Nonempty a)
-fuzzNonempty f =
-    Fuzz.map2 Nonempty f (Fuzz.list f)
-
-
-{-| Fuzz a record, used for testing maximum/minimum functions.
--}
-fuzzRecord : Fuzzer { a : String, b : Int }
-fuzzRecord =
-    Fuzz.map2 (\a b -> { a = a, b = b }) Fuzz.string Fuzz.int
-
-
-{-| Test suite for `List.Nonempty.Ancillary` for getting/setting/updating.
--}
-getSetUpdateSuite : Test
-getSetUpdateSuite =
-    describe "Getting, Setting, and Updating"
-        [ describe "setAt"
-            [ fuzz3 Fuzz.int Fuzz.string (fuzzNonempty Fuzz.string) "getting should always return the set value" <|
-                \i x xs ->
-                    setAt i x xs
-                        |> NE.get i
-                        |> Expect.equal x
-            , fuzz3 Fuzz.int Fuzz.string (fuzzNonempty Fuzz.string) "the rest of the list should be unaffected" <|
-                \i x xs ->
-                    let
-                        j : Int
-                        j =
-                            modBy (NE.length xs) i
-                    in
-                    setAt i x xs
-                        |> NE.indexedMap Tuple.pair
-                        |> NE.map2
-                            (\orig ( i_, new ) ->
-                                if i_ /= j then
-                                    orig == new
-
-                                else
-                                    new == x
-                            )
-                            xs
-                        |> NE.all identity
-                        |> Expect.true "list should be unchanged"
-            , fuzz3 Fuzz.int Fuzz.string (fuzzNonempty Fuzz.string) "setting should be reversible" <|
-                \i x xs ->
-                    setAt i x xs
-                        |> setAt i (NE.get i xs)
-                        |> NE.toList
-                        |> Expect.equalLists (NE.toList xs)
-            ]
-        , describe "updateAt"
-            [ fuzz3 Fuzz.int Fuzz.int (fuzzNonempty Fuzz.int) "getting should always return the updated value" <|
-                \i add xs ->
-                    updateAt i ((+) add) xs
-                        |> NE.get i
-                        |> Expect.equal (NE.get i xs + add)
-            , fuzz3 Fuzz.int Fuzz.int (fuzzNonempty Fuzz.int) "the rest of the list should be unaffected" <|
-                \i add xs ->
-                    let
-                        j : Int
-                        j =
-                            modBy (NE.length xs) i
-                    in
-                    updateAt i ((+) add) xs
-                        |> NE.indexedMap Tuple.pair
-                        |> NE.map2
-                            (\orig ( i_, new ) ->
-                                if i_ /= j then
-                                    orig == new
-
-                                else
-                                    new == NE.get i xs + add
-                            )
-                            xs
-                        |> NE.all identity
-                        |> Expect.true "list should be unchanged"
-            , fuzz3 Fuzz.int Fuzz.int (fuzzNonempty Fuzz.int) "updating should be reversible" <|
-                \i add xs ->
-                    updateAt i ((+) add) xs
-                        |> updateAt i (\e -> e - add)
-                        |> NE.toList
-                        |> Expect.equalLists (NE.toList xs)
-            ]
-        ]
-
-
 {-| Test suite for `List.Nonempty.Ancillary` for finding extrema.
 -}
 extremaSuite : Test
@@ -332,48 +244,76 @@ extremaWithIndicesSuite =
         ]
 
 
-{-| Test suite for `List.Nonempty.Ancillary` for dealing with `Maybe`s.
+{-| Test suite for `List.Nonempty.Ancillary` for getting/setting/updating.
 -}
-maybeSuite : Test
-maybeSuite =
-    describe "`Maybe`s"
-        [ describe "combine"
-            [ fuzz
-                (Fuzz.frequency
-                    [ ( 1, Fuzz.constant Nothing )
-                    , ( 9, Fuzz.map Just Fuzz.int )
-                    ]
-                    |> fuzzNonempty
-                )
-                "If any is `Nothing`, combine outputs `Nothing`"
-              <|
-                \xs ->
-                    combine xs
-                        |> (if NE.any ((==) Nothing) xs then
-                                Expect.equal Nothing
+getSetUpdateSuite : Test
+getSetUpdateSuite =
+    describe "Getting, Setting, and Updating"
+        [ describe "setAt"
+            [ fuzz3 Fuzz.int Fuzz.string (fuzzNonempty Fuzz.string) "getting should always return the set value" <|
+                \i x xs ->
+                    setAt i x xs
+                        |> NE.get i
+                        |> Expect.equal x
+            , fuzz3 Fuzz.int Fuzz.string (fuzzNonempty Fuzz.string) "the rest of the list should be unaffected" <|
+                \i x xs ->
+                    let
+                        j : Int
+                        j =
+                            modBy (NE.length xs) i
+                    in
+                    setAt i x xs
+                        |> NE.indexedMap Tuple.pair
+                        |> NE.map2
+                            (\orig ( i_, new ) ->
+                                if i_ /= j then
+                                    orig == new
 
-                            else
-                                Expect.equal (Just <| List.filterMap identity <| NE.toList xs) << Maybe.map NE.toList
-                           )
+                                else
+                                    new == x
+                            )
+                            xs
+                        |> NE.all identity
+                        |> Expect.true "list should be unchanged"
+            , fuzz3 Fuzz.int Fuzz.string (fuzzNonempty Fuzz.string) "setting should be reversible" <|
+                \i x xs ->
+                    setAt i x xs
+                        |> setAt i (NE.get i xs)
+                        |> NE.toList
+                        |> Expect.equalLists (NE.toList xs)
             ]
-        , describe "traverse"
-            [ fuzz
-                (Fuzz.frequency
-                    [ ( 1, Fuzz.constant [] )
-                    , ( 9, Fuzz.map2 (::) Fuzz.int (Fuzz.list Fuzz.int) )
-                    ]
-                    |> fuzzNonempty
-                )
-                "If any function output is `Nothing`, combine outputs `Nothing`"
-              <|
-                \xs ->
-                    traverse List.head xs
-                        |> (if NE.any List.isEmpty xs then
-                                Expect.equal Nothing
+        , describe "updateAt"
+            [ fuzz3 Fuzz.int Fuzz.int (fuzzNonempty Fuzz.int) "getting should always return the updated value" <|
+                \i add xs ->
+                    updateAt i ((+) add) xs
+                        |> NE.get i
+                        |> Expect.equal (NE.get i xs + add)
+            , fuzz3 Fuzz.int Fuzz.int (fuzzNonempty Fuzz.int) "the rest of the list should be unaffected" <|
+                \i add xs ->
+                    let
+                        j : Int
+                        j =
+                            modBy (NE.length xs) i
+                    in
+                    updateAt i ((+) add) xs
+                        |> NE.indexedMap Tuple.pair
+                        |> NE.map2
+                            (\orig ( i_, new ) ->
+                                if i_ /= j then
+                                    orig == new
 
-                            else
-                                Expect.equal (Just <| List.filterMap List.head <| NE.toList xs) << Maybe.map NE.toList
-                           )
+                                else
+                                    new == NE.get i xs + add
+                            )
+                            xs
+                        |> NE.all identity
+                        |> Expect.true "list should be unchanged"
+            , fuzz3 Fuzz.int Fuzz.int (fuzzNonempty Fuzz.int) "updating should be reversible" <|
+                \i add xs ->
+                    updateAt i ((+) add) xs
+                        |> updateAt i (\e -> e - add)
+                        |> NE.toList
+                        |> Expect.equalLists (NE.toList xs)
             ]
         ]
 
@@ -424,6 +364,52 @@ jsonSuite =
         ]
 
 
+{-| Test suite for `List.Nonempty.Ancillary` for dealing with `Maybe`s.
+-}
+maybeSuite : Test
+maybeSuite =
+    describe "`Maybe`s"
+        [ describe "combine"
+            [ fuzz
+                (Fuzz.frequency
+                    [ ( 1, Fuzz.constant Nothing )
+                    , ( 9, Fuzz.map Just Fuzz.int )
+                    ]
+                    |> fuzzNonempty
+                )
+                "If any is `Nothing`, combine outputs `Nothing`"
+              <|
+                \xs ->
+                    combine xs
+                        |> (if NE.any ((==) Nothing) xs then
+                                Expect.equal Nothing
+
+                            else
+                                Expect.equal (Just <| List.filterMap identity <| NE.toList xs) << Maybe.map NE.toList
+                           )
+            ]
+        , describe "traverse"
+            [ fuzz
+                (Fuzz.frequency
+                    [ ( 1, Fuzz.constant [] )
+                    , ( 9, Fuzz.map2 (::) Fuzz.int (Fuzz.list Fuzz.int) )
+                    ]
+                    |> fuzzNonempty
+                )
+                "If any function output is `Nothing`, combine outputs `Nothing`"
+              <|
+                \xs ->
+                    traverse List.head xs
+                        |> (if NE.any List.isEmpty xs then
+                                Expect.equal Nothing
+
+                            else
+                                Expect.equal (Just <| List.filterMap List.head <| NE.toList xs) << Maybe.map NE.toList
+                           )
+            ]
+        ]
+
+
 {-| Test suite for `List.Nonempty.Ancillary` for random functions.
 -}
 randomSuite : Test
@@ -445,3 +431,17 @@ randomSuite =
                         |> Expect.equalLists (NE.toList sorted)
             ]
         ]
+
+
+{-| Fuzz a non-empty list full of a given type.
+-}
+fuzzNonempty : Fuzzer a -> Fuzzer (Nonempty a)
+fuzzNonempty f =
+    Fuzz.map2 Nonempty f (Fuzz.list f)
+
+
+{-| Fuzz a record, used for testing maximum/minimum functions.
+-}
+fuzzRecord : Fuzzer { a : String, b : Int }
+fuzzRecord =
+    Fuzz.map2 (\a b -> { a = a, b = b }) Fuzz.string Fuzz.int
