@@ -1,8 +1,10 @@
 {
   "name": "elm-ancillary-nonempty-list",
   "devDependencies": {
-    "elm-format": "^0.8.5",
-    "elm-review": "^2.4.6",
-    "elm-test": "^0.19.1-revision6"
+    "elm-doc-preview": "^5.0.5",
+    "elm-review": "^2.7.0",
+    "elm-tooling": "^1.7.0",
+    "elm-verify-examples": "^5.2.0",
+    "npm-run-all": "^4.1.5"
   }
 }
