@@ -6,7 +6,7 @@ module List.Nonempty.Ancillary exposing
     , find, count
     , combine, traverse
     , decodeArray, encodeArray, decodeObject, encodeObject
-    , shuffle
+    , shuffle, sequenceGenerators
     )
 
 {-| The `List.Nonempty.Ancillary` module provides additional convenience
@@ -68,7 +68,7 @@ and `"tail"`, containing a (possibly empty) array of the rest of the elements:
 
 # Random
 
-@docs shuffle
+@docs shuffle, sequenceGenerators
 
 -}
 
@@ -632,3 +632,12 @@ shuffle l =
     NE.toList l
         |> Random.List.shuffle
         |> Random.map (Maybe.withDefault l << NE.fromList)
+
+
+{-| Given a non-empty list random generators, turn them into a generator that
+returns a non-empty list.
+-}
+sequenceGenerators : Nonempty (Generator a) -> Generator (Nonempty a)
+sequenceGenerators =
+    NE.reverse
+        >> (\(Nonempty x xs) -> List.foldl (Random.map2 NE.cons) (Random.map NE.singleton x) xs)

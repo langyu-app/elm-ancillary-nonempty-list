@@ -28,6 +28,7 @@ import List.Nonempty.Ancillary
         , minimum
         , minimumBy
         , minimumWith
+        , sequenceGenerators
         , setAt
         , shuffle
         , traverse
@@ -433,6 +434,17 @@ randomSuite =
                         |> NE.sort
                         |> NE.toList
                         |> Expect.equalLists (NE.toList sorted)
+            ]
+        , describe "sequenceGenerators"
+            [ fuzz Fuzz.int "sequence is preserved" <|
+                \seed ->
+                    Nonempty 1 [ 2, 3 ]
+                        |> NE.map Random.constant
+                        |> sequenceGenerators
+                        |> (\g -> Random.step g <| Random.initialSeed seed)
+                        |> Tuple.first
+                        |> NE.toList
+                        |> Expect.equalLists [ 1, 2, 3 ]
             ]
         ]
 
