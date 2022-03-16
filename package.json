@@ -1,5 +1,21 @@
 {
   "name": "elm-ancillary-nonempty-list",
+  "scripts": {
+    "postinstall": "elm-tooling install",
+    "preview-docs": "elm-doc-preview",
+    "review": "npx elm-review --fix",
+    "test": "npm-run-all --print-name --silent --sequential test:make test:format test:run test:verify-examples test:review",
+    "test:format": "elm-format src/ tests/ --validate",
+    "test:make": "elm make --docs=docs.json --output=/dev/null",
+    "test:review": "elm-review",
+    "test:run": "elm-test-rs",
+    "test:verify-examples": "elm-verify-examples --run-tests"
+  },
+  "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/langyu-app/elm-ancillary-nonempty-list.git"
+  },
   "devDependencies": {
     "elm-doc-preview": "^5.0.5",
     "elm-review": "^2.7.0",
