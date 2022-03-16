@@ -2,7 +2,7 @@ module List.Nonempty.Ancillary exposing
     ( setAt, updateAt
     , maximum, maximumBy, maximumWith, minimum, minimumBy, minimumWith
     , indexedMaximum, indexedMaximumBy, indexedMaximumWith, indexedMinimum, indexedMinimumBy, indexedMinimumWith
-    , count
+    , find, count
     , combine, traverse
     , decodeArray, encodeArray, decodeObject, encodeObject
     , shuffle
@@ -34,7 +34,7 @@ Find minimum/maximum elements and their indices without `Maybe`s.
 
 # Searching
 
-@docs count
+@docs find, count
 
 
 # `Maybe`s
@@ -420,6 +420,37 @@ indexedMinimumWith f (Nonempty l ls) =
                     acc
     in
     ListX.indexedFoldl step ( 0, l ) ls
+
+
+{-| Find the first element that satisfies a predicate and return `Just` that
+element, or if none match, return `Nothing`.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    find (\i -> i > 3) <| Nonempty 2 [ 4, 6, 8 ]
+    --> Just 4
+
+    find (\i -> i > 3) <| Nonempty 0 [ 1, 2, 3 ]
+    --> Nothing
+
+-}
+find : (a -> Bool) -> Nonempty a -> Maybe a
+find pred (Nonempty first rest) =
+    let
+        go : List a -> Maybe a
+        go xs =
+            case xs of
+                [] ->
+                    Nothing
+
+                x :: xs_ ->
+                    if pred x then
+                        Just x
+
+                    else
+                        go xs_
+    in
+    go (first :: rest)
 
 
 {-| Return the number of elements in the list that satisfy a given predicate.

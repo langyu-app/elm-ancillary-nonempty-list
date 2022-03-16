@@ -15,6 +15,7 @@ import List.Nonempty.Ancillary
         , decodeObject
         , encodeArray
         , encodeObject
+        , find
         , indexedMaximum
         , indexedMaximumBy
         , indexedMaximumWith
@@ -441,7 +442,14 @@ randomSuite =
 searchSuite : Test
 searchSuite =
     describe "Searching"
-        [ describe "count"
+        [ describe "find"
+            [ fuzz (fuzzNonempty Fuzz.int) "should return the first matching element" <|
+                \l ->
+                    NE.toList l
+                        |> ListX.find ((==) 0 << modBy 2)
+                        |> Expect.equal (find ((==) 0 << modBy 2) l)
+            ]
+        , describe "count"
             [ fuzz (fuzzNonempty Fuzz.int) "should return the correct count" <|
                 \l ->
                     NE.toList l
