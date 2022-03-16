@@ -1,11 +1,4 @@
-module ListNonemptyAncillaryTest exposing
-    ( extremaSuite
-    , extremaWithIndicesSuite
-    , getSetUpdateSuite
-    , jsonSuite
-    , maybeSuite
-    , randomSuite
-    )
+module ListNonemptyAncillaryTest exposing (all)
 
 import Expect
 import Fuzz exposing (Fuzzer)
@@ -40,6 +33,20 @@ import List.Nonempty.Ancillary
 import Random
 import Test exposing (Test, describe, fuzz, fuzz2, fuzz3, test)
 import Test.Extra as TestX exposing (DecoderExpectation(..))
+
+
+{-| All tests.
+-}
+all : Test
+all =
+    describe "List.Nonempty.Ancillary"
+        [ extremaSuite
+        , extremaWithIndicesSuite
+        , getSetUpdateSuite
+        , jsonSuite
+        , maybeSuite
+        , randomSuite
+        ]
 
 
 {-| Fuzz a non-empty list full of a given type.
