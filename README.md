@@ -6,6 +6,7 @@
   * [Introduction](#introduction)
   * [Installation](#installation)
   * [Contributing](#contributing)
+  * [Changelog](#changelog)
 
 ## Introduction
 
@@ -25,6 +26,15 @@ elm install langyu-app/elm-ancillary-nonempty-list
 
 Contributions are welcome, so long as it has the potential to be generally
 useful and isn't found already in `mgold/elm-nonempty-list`.
+
+## Changelog
+
+* `1.1.0`
+  * 📄 -- Release under BSD 3-Clause license
+  * ✨ -- Add `count`, `find`, `foldr`, `foldr1`, and `sequenceGenerators`
+  * 📝 -- Add doc examples (checked with
+    [elm-verify-examples](https://github.com/stoeffel/elm-verify-examples))
+* `1.0.0` -- Initial release
 
 ---
 
