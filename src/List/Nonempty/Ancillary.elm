@@ -1,5 +1,6 @@
 module List.Nonempty.Ancillary exposing
     ( setAt, updateAt
+    , initialize
     , foldr, foldr1
     , maximum, maximumBy, maximumWith, minimum, minimumBy, minimumWith
     , indexedMaximum, indexedMaximumBy, indexedMaximumWith, indexedMinimum, indexedMinimumBy, indexedMinimumWith
@@ -17,6 +18,11 @@ lists.
 # Getting, Setting, and Updating
 
 @docs setAt, updateAt
+
+
+# Building
+
+@docs initialize
 
 
 # Folds
@@ -140,6 +146,39 @@ updateAt i f (Nonempty x xs) =
 
         Nothing ->
             Nonempty x xs
+
+
+{-| Initialize a list of a given length by calling a function with each index.
+The resulting list will always have at least 1 item, even if called with a
+negative or zero length.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    initialize 1 (\i -> i)
+    --> Nonempty 0 []
+
+    initialize 3 (\i -> i * 2)
+    --> Nonempty 0 [ 2, 4 ]
+
+    initialize 0 (\i -> i + 1)
+    --> Nonempty 1 []
+
+    initialize -1 (\i -> i + 1)
+    --> Nonempty 1 []
+
+-}
+initialize : Int -> (Int -> a) -> Nonempty a
+initialize n f =
+    let
+        step : Int -> List a -> List a
+        step i acc =
+            if i <= 0 then
+                acc
+
+            else
+                step (i - 1) (f i :: acc)
+    in
+    Nonempty (f 0) <| step (n - 1) []
 
 
 {-| Reduce a non-empty list from the right.

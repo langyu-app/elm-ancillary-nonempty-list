@@ -22,6 +22,7 @@ import List.Nonempty.Ancillary
         , indexedMinimum
         , indexedMinimumBy
         , indexedMinimumWith
+        , initialize
         , maximum
         , maximumBy
         , maximumWith
@@ -47,10 +48,32 @@ all =
         [ extremaSuite
         , extremaWithIndicesSuite
         , getSetUpdateSuite
+        , buildSuite
         , searchSuite
         , jsonSuite
         , maybeSuite
         , randomSuite
+        ]
+
+
+{-| Test suite for `List.Nonempty.Ancillary` for building lists.
+-}
+buildSuite : Test
+buildSuite =
+    describe "Building"
+        [ describe "initialize"
+            [ fuzz (Fuzz.intRange -9999 9999) "should return the same as with a list, unless the length is zero or less" <|
+                \len ->
+                    initialize len identity
+                        |> NE.toList
+                        |> Expect.equal
+                            (if len > 0 then
+                                ListX.initialize len identity
+
+                             else
+                                [ 0 ]
+                            )
+            ]
         ]
 
 
