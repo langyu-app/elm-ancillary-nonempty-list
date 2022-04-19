@@ -29,6 +29,9 @@ useful and isn't found already in `mgold/elm-nonempty-list`.
 
 ## Changelog
 
+* `1.2.0`
+  * ✨ -- Add `initialize`
+  * 📄 -- Fix `elm.json` mistakenly listing GPL-3.0 license still
 * `1.1.0`
   * 📄 -- Release under BSD 3-Clause license
   * ✨ -- Add `count`, `find`, `foldr`, `foldr1`, and `sequenceGenerators`
