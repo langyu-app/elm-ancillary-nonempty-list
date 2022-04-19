@@ -13,7 +13,7 @@
     "test:run": "elm-test-rs",
     "test:verify-examples": "elm-verify-examples --run-tests"
   },
-  "license": "GPL-3.0",
+  "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
     "url": "https://github.com/langyu-app/elm-ancillary-nonempty-list.git"
