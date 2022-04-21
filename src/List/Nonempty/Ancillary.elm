@@ -1,6 +1,6 @@
 module List.Nonempty.Ancillary exposing
     ( setAt, updateAt
-    , initialize
+    , appendList, prependList, initialize
     , foldr, foldr1
     , maximum, maximumBy, maximumWith, minimum, minimumBy, minimumWith
     , indexedMaximum, indexedMaximumBy, indexedMaximumWith, indexedMinimum, indexedMinimumBy, indexedMinimumWith
@@ -22,7 +22,7 @@ lists.
 
 # Building
 
-@docs initialize
+@docs appendList, prependList, initialize
 
 
 # Folds
@@ -146,6 +146,43 @@ updateAt i f (Nonempty x xs) =
 
         Nothing ->
             Nonempty x xs
+
+
+{-| Append a list to the end of a non-empty list.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    appendList (Nonempty 1 [ 2 ]) [ 3, 4 ]
+    --> Nonempty 1 [ 2, 3, 4 ]
+
+    appendList (Nonempty 1 [ 2 ]) []
+    --> Nonempty 1 [ 2 ]
+
+-}
+appendList : Nonempty a -> List a -> Nonempty a
+appendList (Nonempty x xs) ys =
+    Nonempty x (xs ++ ys)
+
+
+{-| Prepend a list to the beginning of a non-empty list.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    prependList [ 1, 2 ] <| Nonempty 3 [ 4 ]
+    --> Nonempty 1 [ 2, 3, 4 ]
+
+    prependList [] <| Nonempty 1 [ 2 ]
+    --> Nonempty 1 [ 2 ]
+
+-}
+prependList : List a -> Nonempty a -> Nonempty a
+prependList xs (Nonempty y ys) =
+    case xs of
+        [] ->
+            Nonempty y ys
+
+        x :: xs_ ->
+            Nonempty x (xs_ ++ y :: ys)
 
 
 {-| Initialize a list of a given length by calling a function with each index.

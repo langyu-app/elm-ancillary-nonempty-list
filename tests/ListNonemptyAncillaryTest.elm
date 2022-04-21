@@ -9,7 +9,8 @@ import List.Extra as ListX
 import List.Nonempty as NE exposing (Nonempty(..))
 import List.Nonempty.Ancillary
     exposing
-        ( combine
+        ( appendList
+        , combine
         , count
         , decodeArray
         , decodeObject
@@ -29,6 +30,7 @@ import List.Nonempty.Ancillary
         , minimum
         , minimumBy
         , minimumWith
+        , prependList
         , sequenceGenerators
         , setAt
         , shuffle
@@ -61,7 +63,21 @@ all =
 buildSuite : Test
 buildSuite =
     describe "Building"
-        [ describe "initialize"
+        [ describe "appendList"
+            [ fuzz2 (fuzzNonempty Fuzz.int) (Fuzz.list Fuzz.int) "should be equivalent to appending lists" <|
+                \pre post ->
+                    appendList pre post
+                        |> NE.toList
+                        |> Expect.equal (NE.toList pre ++ post)
+            ]
+        , describe "prependList"
+            [ fuzz2 (Fuzz.list Fuzz.int) (fuzzNonempty Fuzz.int) "should be equivalent to appending lists" <|
+                \pre post ->
+                    prependList pre post
+                        |> NE.toList
+                        |> Expect.equal (pre ++ NE.toList post)
+            ]
+        , describe "initialize"
             [ fuzz (Fuzz.intRange -9999 9999) "should return the same as with a list, unless the length is zero or less" <|
                 \len ->
                     initialize len identity
