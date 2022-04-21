@@ -3,6 +3,7 @@
     "name": "langyu-app/elm-ancillary-nonempty-list",
     "summary": "Convenience functions not included in mgold/elm-nonempty-list",
     "license": "BSD-3-Clause",
+    "version": "1.3.0",
     "exposed-modules": [
         "List.Nonempty.Ancillary"
     ],
