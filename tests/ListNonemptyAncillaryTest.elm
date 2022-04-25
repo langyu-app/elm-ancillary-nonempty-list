@@ -17,6 +17,7 @@ import List.Nonempty.Ancillary
         , encodeArray
         , encodeObject
         , find
+        , generator
         , indexedMaximum
         , indexedMaximumBy
         , indexedMaximumWith
@@ -459,7 +460,16 @@ maybeSuite =
 randomSuite : Test
 randomSuite =
     describe "Random"
-        [ describe "shuffle"
+        [ describe "generator"
+            [ fuzz2 Fuzz.int (Fuzz.intRange -100 100) "random lists should always be of the appropriate length" <|
+                \seed len ->
+                    Random.initialSeed seed
+                        |> Random.step (generator len <| Random.int -100 100)
+                        |> Tuple.first
+                        |> NE.length
+                        |> Expect.equal (max 1 len)
+            ]
+        , describe "shuffle"
             [ fuzz2 Fuzz.int (fuzzNonempty Fuzz.int) "sorting -> shuffling -> sorting a list should be a no-op" <|
                 \seed l ->
                     let
