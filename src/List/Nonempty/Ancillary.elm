@@ -1,7 +1,7 @@
 module List.Nonempty.Ancillary exposing
     ( setAt, updateAt
     , appendList, prependList, initialize
-    , foldr, foldr1
+    , foldr, foldr1, indexedFoldl, indexedFoldr
     , maximum, maximumBy, maximumWith, minimum, minimumBy, minimumWith
     , indexedMaximum, indexedMaximumBy, indexedMaximumWith, indexedMinimum, indexedMinimumBy, indexedMinimumWith
     , find, count
@@ -27,7 +27,7 @@ lists.
 
 # Folds
 
-@docs foldr, foldr1
+@docs foldr, foldr1, indexedFoldl, indexedFoldr
 
 
 # Finding Extrema
@@ -248,6 +248,45 @@ foldr step init (Nonempty x xs) =
 foldr1 : (a -> a -> a) -> Nonempty a -> a
 foldr1 step =
     NE.foldl1 step << NE.reverse
+
+
+{-| `foldl` that also passes the index of the current element to the step
+function.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    indexedFoldl (\i x acc -> String.fromInt i ++ x ++ acc) "" <| Nonempty "a" [ "b", "c" ]
+    --> "2c1b0a"
+
+-}
+indexedFoldl : (Int -> a -> b -> b) -> b -> Nonempty a -> b
+indexedFoldl f init =
+    let
+        step : a -> ( Int, b ) -> ( Int, b )
+        step x ( i, acc ) =
+            ( i + 1, f i x acc )
+    in
+    Tuple.second << NE.foldl step ( 0, init )
+
+
+{-| `foldr` that also passes the index of the current element to the step
+function. Note that this isn't particularly efficient, as it traverses the list
+multiple times.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    indexedFoldr (\i x acc -> String.fromInt i ++ x ++ acc) "" <| Nonempty "a" [ "b", "c" ]
+    --> "0a1b2c"
+
+-}
+indexedFoldr : (Int -> a -> b -> b) -> b -> Nonempty a -> b
+indexedFoldr f init xs =
+    let
+        step : a -> ( Int, b ) -> ( Int, b )
+        step x ( i, acc ) =
+            ( i - 1, f i x acc )
+    in
+    Tuple.second <| foldr step ( NE.length xs - 1, init ) xs
 
 
 {-| Find the maximum element in a non-empty list.
