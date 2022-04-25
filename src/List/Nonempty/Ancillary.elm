@@ -4,7 +4,7 @@ module List.Nonempty.Ancillary exposing
     , foldr, foldr1, indexedFoldl, indexedFoldr
     , maximum, maximumBy, maximumWith, minimum, minimumBy, minimumWith
     , indexedMaximum, indexedMaximumBy, indexedMaximumWith, indexedMinimum, indexedMinimumBy, indexedMinimumWith
-    , find, count
+    , find, elemIndex, elemIndices, findIndex, findIndices, findMap, count
     , combine, traverse
     , decodeArray, encodeArray, decodeObject, encodeObject
     , shuffle, sequenceGenerators
@@ -46,7 +46,7 @@ Find minimum/maximum elements and their indices without `Maybe`s.
 
 # Searching
 
-@docs find, count
+@docs find, elemIndex, elemIndices, findIndex, findIndices, findMap, count
 
 
 # `Maybe`s
@@ -604,6 +604,143 @@ find pred (Nonempty first rest) =
                         go xs_
     in
     go (first :: rest)
+
+
+{-| Return `Just` the index (starting from 0) of the first instance of the
+element. If the element does not exist in the list, return `Nothing`.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    elemIndex 1 <| Nonempty 1 [ 2, 3 ]
+    --> Just 0
+
+    elemIndex 4 <| Nonempty 1 [ 2, 3 ]
+    --> Nothing
+
+    elemIndex 1 <| Nonempty 1 [ 1, 7 ]
+    --> Just 0
+
+-}
+elemIndex : a -> Nonempty a -> Maybe Int
+elemIndex x =
+    findIndex ((==) x)
+
+
+{-| Return a (possibly empty) list of all indices (starting from 0) at which the
+element occurs.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    elemIndices 1 <| Nonempty 1 [ 2, 3 ]
+    --> [ 0 ]
+
+    elemIndices 4 <| Nonempty 1 [ 2, 3 ]
+    --> []
+
+    elemIndices 1 <| Nonempty 1 [ 1, 7 ]
+    --> [ 0, 1 ]
+
+-}
+elemIndices : a -> Nonempty a -> List Int
+elemIndices x =
+    findIndices ((==) x)
+
+
+{-| Given a predicate and a nonempty list, return `Just` the index (starting
+from 0) of the first element that satisfies the predicate. If no element in the
+list satisfies the predicate, return `Nothing`.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    findIndex (\i -> i == 7) <| Nonempty 1 [ 1, 7 ]
+    --> Just 2
+
+    findIndex (\i -> i < 1) <| Nonempty 1 [ 3, 5 ]
+    --> Nothing
+
+    findIndex (\i -> i > 1) <| Nonempty 1 [ 2, 3 ]
+    --> Just 1
+
+-}
+findIndex : (a -> Bool) -> Nonempty a -> Maybe Int
+findIndex p (Nonempty head tail) =
+    let
+        go : Int -> List a -> Maybe Int
+        go i l =
+            case l of
+                [] ->
+                    Nothing
+
+                x :: xs ->
+                    if p x then
+                        Just i
+
+                    else
+                        go (i + 1) xs
+    in
+    go 0 <| head :: tail
+
+
+{-| Given a predicate and a nonempty list, return a (possibly empty) list of all
+indices (starting from 0) at which the element satisfies the predicate.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    findIndices (\i -> i == 7) <| Nonempty 1 [ 1, 7 ]
+    --> [ 2 ]
+
+    findIndices (\i -> i < 1) <| Nonempty 1 [ 3, 5 ]
+    --> []
+
+    findIndices (\i -> i > 1) <| Nonempty 1 [ 2, 3 ]
+    --> [ 1, 2 ]
+
+-}
+findIndices : (a -> Bool) -> Nonempty a -> List Int
+findIndices p =
+    let
+        step : Int -> a -> List Int -> List Int
+        step i x acc =
+            if p x then
+                i :: acc
+
+            else
+                acc
+    in
+    indexedFoldr step []
+
+
+{-| Apply a function that may succeed (return a `Just` value) to values in a
+non-empty list, returning the result of the first successful match. If none
+match, then return Nothing.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    findMap String.toInt <| Nonempty "a" [ "b", "3" ]
+    --> Just 3
+
+    findMap String.toInt <| Nonempty "a" [ "b", "c" ]
+    --> Nothing
+
+-}
+findMap : (a -> Maybe b) -> Nonempty a -> Maybe b
+findMap f (Nonempty x xs) =
+    let
+        go : List a -> Maybe b
+        go list =
+            case list of
+                [] ->
+                    Nothing
+
+                a :: tail ->
+                    case f a of
+                        Just b ->
+                            Just b
+
+                        Nothing ->
+                            go tail
+    in
+    go (x :: xs)
 
 
 {-| Return the number of elements in the list that satisfy a given predicate.
