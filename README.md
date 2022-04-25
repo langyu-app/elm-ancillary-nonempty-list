@@ -29,6 +29,8 @@ useful and isn't found already in `mgold/elm-nonempty-list`.
 
 ## Changelog
 
+* `1.5.0`
+  * ✨ -- Add random `generator`
 * `1.4.0`
   * ✨ -- Add indexed folds (`indexedFoldl` and `indexedFoldr`)
   * ✨ -- Add element finds (`elemIndex`, `elemIndices`, `findIndex`,
