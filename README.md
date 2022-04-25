@@ -29,6 +29,10 @@ useful and isn't found already in `mgold/elm-nonempty-list`.
 
 ## Changelog
 
+* `1.4.0`
+  * ✨ -- Add indexed folds (`indexedFoldl` and `indexedFoldr`)
+  * ✨ -- Add element finds (`elemIndex`, `elemIndices`, `findIndex`,
+    `findIndices`, and `findMap`)
 * `1.3.0`
   * ✨ -- Add `appendList` and `prependList`
   * 📄 -- Fix `elm.json` mistakenly listing GPL-3.0 license still
