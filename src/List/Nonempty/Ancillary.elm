@@ -2,6 +2,7 @@ module List.Nonempty.Ancillary exposing
     ( setAt, updateAt
     , appendList, prependList, initialize
     , foldr, foldr1, indexedFoldl, indexedFoldr
+    , unique, uniqueBy, allDifferent, allDifferentBy
     , maximum, maximumBy, maximumWith, minimum, minimumBy, minimumWith
     , indexedMaximum, indexedMaximumBy, indexedMaximumWith, indexedMinimum, indexedMinimumBy, indexedMinimumWith
     , find, elemIndex, elemIndices, findIndex, findIndices, findMap, count
@@ -28,6 +29,11 @@ lists.
 # Folds
 
 @docs foldr, foldr1, indexedFoldl, indexedFoldr
+
+
+# Uniqueness
+
+@docs unique, uniqueBy, allDifferent, allDifferentBy
 
 
 # Finding Extrema
@@ -287,6 +293,109 @@ indexedFoldr f init xs =
             ( i - 1, f i x acc )
     in
     Tuple.second <| foldr step ( NE.length xs - 1, init ) xs
+
+
+{-| Remove all duplicate values from the non-empty list, keeping only the first
+instance of each element that appears more than once.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    unique <| Nonempty 0  [ 1, 1, 0, 1 ]
+    --> Nonempty 0 [ 1 ]
+
+-}
+unique : Nonempty a -> Nonempty a
+unique =
+    uniqueBy identity
+
+
+{-| Remove all duplicate values from the non-empty list, where uniqueness is
+determined first by applying a function, keeping only the first instance of each
+element that appears more than once.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    uniqueBy (String.left 1) <| Nonempty "foo"  [ "bar", "baz", "fun", "boil" ]
+    --> Nonempty "foo" [ "bar" ]
+
+Note that this only applies the function once for each element, in case it is an
+expensive operation.
+
+-}
+uniqueBy : (a -> b) -> Nonempty a -> Nonempty a
+uniqueBy f (Nonempty x xs) =
+    let
+        go : List b -> List a -> List a -> List a
+        go existing remaining accumulator =
+            case remaining of
+                [] ->
+                    List.reverse accumulator
+
+                y :: ys ->
+                    let
+                        fY : b
+                        fY =
+                            f y
+                    in
+                    if List.member fY existing then
+                        go existing ys accumulator
+
+                    else
+                        go (fY :: existing) ys (y :: accumulator)
+    in
+    go [ f x ] xs []
+        |> Nonempty x
+
+
+{-| Indicate whether or not the non-empty list has duplicate values.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    allDifferent <| Nonempty 0 [ 1, 1, 0, 1 ]
+    --> False
+
+    allDifferent <| Nonempty 0 [ 1, 2]
+    --> True
+
+-}
+allDifferent : Nonempty a -> Bool
+allDifferent =
+    allDifferentBy identity
+
+
+{-| Indicate whether or not the non-empty list has duplicate values after
+transformation by some function.
+
+    import List.Nonempty exposing (Nonempty(..))
+
+    allDifferentBy (String.left 1) <| Nonempty "foo" [ "bar", "baz" ]
+    --> False
+
+    allDifferentBy (String.left 1) <| Nonempty "far" [ "bar", "car" ]
+    --> True
+
+Note that this only applies the function once for each element, in case it is an
+expensive operation.
+
+-}
+allDifferentBy : (a -> b) -> Nonempty a -> Bool
+allDifferentBy f list =
+    let
+        go : Nonempty a -> Nonempty a -> Bool
+        go l1 l2 =
+            -- Compare lengths recursively so it can short circuit
+            case ( l1, l2 ) of
+                ( Nonempty _ [], Nonempty _ [] ) ->
+                    True
+
+                ( Nonempty _ (x :: xs), Nonempty _ (y :: ys) ) ->
+                    go (Nonempty x xs) (Nonempty y ys)
+
+                _ ->
+                    False
+    in
+    uniqueBy f list
+        |> go list
 
 
 {-| Find the maximum element in a non-empty list.

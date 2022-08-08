@@ -9,7 +9,9 @@ import List.Extra as ListX
 import List.Nonempty as NE exposing (Nonempty(..))
 import List.Nonempty.Ancillary
     exposing
-        ( appendList
+        ( allDifferent
+        , allDifferentBy
+        , appendList
         , combine
         , count
         , decodeArray
@@ -36,6 +38,8 @@ import List.Nonempty.Ancillary
         , setAt
         , shuffle
         , traverse
+        , unique
+        , uniqueBy
         , updateAt
         )
 import Random
@@ -52,6 +56,7 @@ all =
         , extremaWithIndicesSuite
         , getSetUpdateSuite
         , buildSuite
+        , uniquenessSuite
         , searchSuite
         , jsonSuite
         , maybeSuite
@@ -516,6 +521,54 @@ searchSuite =
                     NE.toList l
                         |> ListX.count ((==) 0 << modBy 2)
                         |> Expect.equal (count ((==) 0 << modBy 2) l)
+            ]
+        ]
+
+
+{-| Test suite for `List.Nonempty.Ancillary` for dealing with uniqueness.
+-}
+uniquenessSuite : Test
+uniquenessSuite =
+    describe "Uniqueness"
+        [ describe "unique"
+            [ fuzz (fuzzNonempty Fuzz.int) "should be equivalent to the list operation" <|
+                \xs ->
+                    unique xs
+                        |> NE.toList
+                        |> Expect.equal (ListX.unique <| NE.toList xs)
+            ]
+        , describe "uniqueBy"
+            [ fuzz (fuzzNonempty Fuzz.int) "should be equivalent to the list operation" <|
+                \xs ->
+                    let
+                        f : Int -> Int
+                        f i =
+                            (i + 3) ^ 2
+                    in
+                    uniqueBy f xs
+                        |> NE.toList
+                        |> Expect.equal
+                            (NE.toList xs
+                                |> ListX.uniqueBy f
+                            )
+            ]
+        , describe "allDifferent"
+            [ fuzz (fuzzNonempty Fuzz.int) "should be equivalent to the list operation" <|
+                \xs ->
+                    allDifferent xs
+                        |> Expect.equal (ListX.allDifferent <| NE.toList xs)
+            ]
+        , describe "allDifferentBy"
+            [ fuzz (fuzzNonempty Fuzz.int) "should be equivalent to the list operation" <|
+                \xs ->
+                    let
+                        f : Int -> Int
+                        f i =
+                            (i + 3) ^ 2
+                    in
+                    NE.toList xs
+                        |> ListX.allDifferentBy f
+                        |> Expect.equal (allDifferentBy f xs)
             ]
         ]
 
