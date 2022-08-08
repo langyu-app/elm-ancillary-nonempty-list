@@ -29,6 +29,9 @@ useful and isn't found already in `mgold/elm-nonempty-list`.
 
 ## Changelog
 
+* `1.6.0`
+  * ✨ Add uniqueness functions: `unique`, `uniqueBy`, `allDifferent`, and
+    `allDifferentBy`.
 * `1.5.0`
   * ✨ -- Add random `generator`
 * `1.4.0`
