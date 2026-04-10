@@ -1,4 +1,3 @@
 {
-  "root": "../src",
   "tests": ["List.Nonempty.Ancillary"]
 }
