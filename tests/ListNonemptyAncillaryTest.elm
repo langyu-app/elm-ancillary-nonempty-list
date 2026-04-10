@@ -44,7 +44,7 @@ import List.Nonempty.Ancillary
         )
 import Random
 import Test exposing (Test, describe, fuzz, fuzz2, fuzz3, test)
-import Test.Extra as TestX exposing (DecoderExpectation(..))
+import TestExtra as TestX exposing (DecoderExpectation(..))
 
 
 {-| All tests.
@@ -324,7 +324,7 @@ getSetUpdateSuite =
                             )
                             xs
                         |> NE.all identity
-                        |> Expect.true "list should be unchanged"
+                        |> Expect.equal True
             , fuzz3 Fuzz.int Fuzz.string (fuzzNonempty Fuzz.string) "setting should be reversible" <|
                 \i x xs ->
                     setAt i x xs
@@ -357,7 +357,7 @@ getSetUpdateSuite =
                             )
                             xs
                         |> NE.all identity
-                        |> Expect.true "list should be unchanged"
+                        |> Expect.equal True
             , fuzz3 Fuzz.int Fuzz.int (fuzzNonempty Fuzz.int) "updating should be reversible" <|
                 \i add xs ->
                     updateAt i ((+) add) xs
